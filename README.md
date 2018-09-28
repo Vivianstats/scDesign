@@ -1,7 +1,7 @@
 scDesign: a statistical simulator for rational scRNA-seq experimental design
 ================
 Wei Vivian Li, Jingyi Jessica Li
-2018-09-01
+2018-09-28
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 Latest News
@@ -12,7 +12,7 @@ Latest News
 Introduction
 ------------
 
-Any suggestions on the package are welcome! For technical problems, please report to [Issues](https://github.com/Vivianstats/scImpute/issues). For suggestions and comments on the method, please contact Wei (<liw@ucla.edu>) or Dr. Jessica Li (<jli@stat.ucla.edu>).
+Any suggestions on the package are welcome! For technical problems, please report to [Issues](https://github.com/Vivianstats/scDesign/issues). For suggestions and comments on the method, please contact Wei (Vivian) (<liw@ucla.edu>) or Dr. Jessica Li (<jli@stat.ucla.edu>).
 
 Installation
 ------------
@@ -35,7 +35,7 @@ Quick start
 -   `design_sep` for scRNA-seq experimental design assuming two cell states are sequenced independetly
 -   `design_joint` for scRNA-seq experimental design assuming two cell states are sequenced together
 
-For detailed usage, please refer to the package [manual](https://github.com/Vivianstats/scImpute/blob/master/inst/docs/) or [vignette](https://github.com/Vivianstats/scImpute/blob/master/vignettes/scImpute-vignette.Rmd).
+For detailed usage, please refer to the package [manual](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/) or [vignette](https://github.com/Vivianstats/scDesign/blob/master/vignettes/scDesign-vignette.Rmd).
 
 ### `design_data`
 
@@ -123,12 +123,12 @@ prlist = design_joint(realcount1, realcount2, prop1 = 0.2, prop2 = 0.15,
 names(prlist)
 #> precision  recall  TN  F1  F2
 prlist$recall
-#>           512    1024    2048    4096    8192
-#> 0.01  0.31506 0.33049 0.25881 0.17595 0.11107
-#> 0.001 0.23522 0.28131 0.24005 0.16899 0.10771
-#> 1e-04 0.17573 0.23551 0.21992 0.16249 0.10504
-#> 1e-05 0.13270 0.19789 0.19966 0.15483 0.10207
-#> 1e-06 0.10309 0.16605 0.18077 0.14702 0.09946
+#>       512   1024  2048  4096  8192
+#> 0.01  0.315 0.33  0.259 0.176 0.111
+#> 0.001 0.235 0.281 0.24  0.169 0.108
+#> 1e-04 0.176 0.236 0.22  0.162 0.105
+#> 1e-05 0.133 0.198 0.2   0.155 0.102
+#> 1e-06 0.103 0.166 0.181 0.147 0.099
 ```
 
 `design_joint` also saves the analysis results to a txt file \[REF\] and a set of power analysis plots \[REF\].
