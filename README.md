@@ -1,0 +1,134 @@
+scDesign: a statistical simulator for rational scRNA-seq experimental design
+================
+Wei Vivian Li, Jingyi Jessica Li
+2018-09-01
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+Latest News
+-----------
+
+> 2018/08/15:
+
+Introduction
+------------
+
+Any suggestions on the package are welcome! For technical problems, please report to [Issues](https://github.com/Vivianstats/scImpute/issues). For suggestions and comments on the method, please contact Wei (<liw@ucla.edu>) or Dr. Jessica Li (<jli@stat.ucla.edu>).
+
+Installation
+------------
+
+The package is not on CRAN yet. For installation please use the following codes in `R`
+
+``` r
+install.packages("devtools")
+library(devtools)
+
+install_github("Vivianstats/scDesign")
+```
+
+Quick start
+-----------
+
+`scDesign` has three main functions:
+
+-   `design_data` for simulation of scRNA-seq data
+-   `design_sep` for scRNA-seq experimental design assuming two cell states are sequenced independetly
+-   `design_joint` for scRNA-seq experimental design assuming two cell states are sequenced together
+
+For detailed usage, please refer to the package [manual](https://github.com/Vivianstats/scImpute/blob/master/inst/docs/) or [vignette](https://github.com/Vivianstats/scImpute/blob/master/vignettes/scImpute-vignette.Rmd).
+
+### `design_data`
+
+`design_data` simulates additional scRNA-seq data by estimating gene expression parameters from a real scRNA-seq dataset. When `ngroup = 1`, it each time simulates a single dataset based on user-specified total read number `S` and cell number `ncell`.
+
+``` r
+realcount1 = readRDS(system.file("extdata", "astrocytes.rds", package = "scDesign"))
+simcount1 = design_data(realcount = realcount1, S = 1e7, ncell = 1000, ngroup = 1, ncores = 1)
+
+realcount1[1:3, 1:3]
+#>              GSM1657885 GSM1657932 GSM1657938
+#> 1/2-SBSRNA4           0          0          0
+#> A2M                   0          0         34
+#> A2ML1                 0          0         25
+simcount1[1:3, 1:3]
+#>       cell1 cell2 cell3
+#> gene1     0     0     0
+#> gene2     0     0    68
+#> gene3     0     0     1
+```
+
+When `ngroup > 1`, it simulates `ngroup` datasets following a specified differentiation path.
+
+``` r
+simdata = design_data(realcount = realcount1, S = 1e7, ncell = 100, ngroup = 3, 
+                      pUp = 0.03, pDown = 0.03, fU = 3, fL = 1.5, ncores = 1)
+
+# simdata is a list of three elements
+names(simdata) 
+#> [1] "count"     "genesUp"   "genesDown"
+
+# count matrix of the cell state 2
+simdata$count[[2]][1:3, 1:3] 
+#>       C2_1 C2_2 C2_3
+#> gene1  132    0    0
+#> gene2    6    2    6
+#> gene3    0    0    0
+
+# up-regulated genes from state 1 to state 2
+simdata$genesUp[[2]][1:3] 
+#> [1] "gene1655" "gene614"  "gene6057"
+
+# down-regulated genes from state 1 to state 2
+simdata$genesDown[[2]][1:3] 
+#> [1] "gene1958" "gene4631" "gene4888"
+```
+
+### `design_sep`
+
+`design_sep` assists experimental design by selecting the optimal cell numbers for the two cell states in scRNA-seq, so that the subsequent DE analysis becomes most accurate based on the user-specified criterion. It assumes that cells from the two states are prepared as two separate libraries and sequenced independently.
+
+``` r
+realcount1 = readRDS(system.file("extdata", "astrocytes.rds", package = "scDesign"))
+realcount2 = readRDS(system.file("extdata", "oligodendrocytes.rds", package = "scDesign"))
+
+# candidate cell numbers for experimental design
+ncell = cbind(2^seq(6,11,1), 2^seq(6,11,1))
+prlist = design_sep(realcount1, realcount2, ncell = ncell, de_method = "ttest", ncores = 10)
+
+# returns a list of five elements
+names(prlist)
+#> precision  recall  TN  F1  F2
+prlist$precision
+#> p_thre 64vs64 128vs128 256vs256 512vs512 1024vs1024 2048vs2048
+#> 0.01   0.332  0.272    0.178    0.121    0.084      0.056
+#> 0.001  0.448  0.361    0.231    0.147    0.097      0.063
+#> 1e-04  0.532  0.434    0.282    0.175    0.11       0.07
+#> 1e-05  0.599  0.491    0.331    0.203    0.124      0.076
+#> 1e-06  0.649  0.534    0.375    0.231    0.138      0.083
+```
+
+`design_sep` also saves the analysis results to a txt file \[REF\] and a set of power analysis plots \[REF\].
+
+### `design_joint`
+
+`design_joint` assists experimental design by selecting the optimal (total) cell number for a cell population that contains the two cell states of interest, so that the subsequent DE analysis becomes most accurate based on the user-specified criterion. It assumes that cells from the two states are prepared in the same library and sequenced together.
+
+``` r
+# candidate cell numbers for experimental design
+ncell = round(2^seq(9,13,1))
+prlist = design_joint(realcount1, realcount2, prop1 = 0.2, prop2 = 0.15,
+                      ncell = ncell, de_method = "ttest", ncores = 10)
+
+# returns a list of five elements
+names(prlist)
+#> precision  recall  TN  F1  F2
+prlist$recall
+#>           512    1024    2048    4096    8192
+#> 0.01  0.31506 0.33049 0.25881 0.17595 0.11107
+#> 0.001 0.23522 0.28131 0.24005 0.16899 0.10771
+#> 1e-04 0.17573 0.23551 0.21992 0.16249 0.10504
+#> 1e-05 0.13270 0.19789 0.19966 0.15483 0.10207
+#> 1e-06 0.10309 0.16605 0.18077 0.14702 0.09946
+```
+
+`design_joint` also saves the analysis results to a txt file \[REF\] and a set of power analysis plots \[REF\].

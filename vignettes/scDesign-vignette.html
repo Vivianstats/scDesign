@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Wei Vivian Li" />
+
+<meta name="date" content="2018-09-01" />
+
+<title>Introduction to scDesign</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to scDesign</h1>
+<h4 class="author"><em>Wei Vivian Li</em></h4>
+<h4 class="date"><em>2018-09-01</em></h4>
+
+
+
+<div id="design_data" class="section level2">
+<h2><code>design_data</code></h2>
+<p><code>design_data</code> simulates additional scRNA-seq data by estimating gene expression parameters from a real scRNA-seq dataset. When <code>ngroup = 1</code>, it each time simulates a single dataset based on user-specified total read number <code>S</code> and cell number <code>ncell</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">realcount1 =<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;astrocytes.rds&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;scDesign&quot;</span>))
+simcount1 =<span class="st"> </span><span class="kw">design_data</span>(<span class="dt">realcount =</span> realcount1, <span class="dt">S =</span> <span class="fl">1e7</span>, <span class="dt">ncell =</span> <span class="dv">1000</span>, <span class="dt">ngroup =</span> <span class="dv">1</span>, <span class="dt">ncores =</span> <span class="dv">1</span>)
+
+realcount1[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]
+<span class="co">#&gt;              GSM1657885 GSM1657932 GSM1657938</span>
+<span class="co">#&gt; 1/2-SBSRNA4           0          0          0</span>
+<span class="co">#&gt; A2M                   0          0         34</span>
+<span class="co">#&gt; A2ML1                 0          0         25</span>
+simcount1[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]
+<span class="co">#&gt;       cell1 cell2 cell3</span>
+<span class="co">#&gt; gene1     0     0     0</span>
+<span class="co">#&gt; gene2     0     0    68</span>
+<span class="co">#&gt; gene3     0     0     1</span></code></pre></div>
+<p>When <code>ngroup &gt; 1</code>, it simulates <code>ngroup</code> datasets following a specified differentiation path. The key parameters are</p>
+<ul>
+<li><code>ngroup</code> number of cell states</li>
+<li><code>S</code>: total read number for each cell state</li>
+<li><code>ncell</code>: cell number for each state</li>
+<li><code>pUp</code>: proportion of up-regulated genes between two adjacent states</li>
+<li><code>pDown</code>: proportion of down-regulated genes between two adjacent states</li>
+<li><code>fU</code>: upper bound of fold changes of DE genes’ expression</li>
+<li><code>fL</code>: lower bound of fold changes of DE genes’ expression</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">simdata =<span class="st"> </span><span class="kw">design_data</span>(<span class="dt">realcount =</span> realcount1, <span class="dt">S =</span> <span class="fl">1e7</span>, <span class="dt">ncell =</span> <span class="dv">100</span>, <span class="dt">ngroup =</span> <span class="dv">3</span>, 
+                      <span class="dt">pUp =</span> <span class="fl">0.03</span>, <span class="dt">pDown =</span> <span class="fl">0.03</span>, <span class="dt">fU =</span> <span class="dv">3</span>, <span class="dt">fL =</span> <span class="fl">1.5</span>, <span class="dt">ncores =</span> <span class="dv">1</span>)
+
+<span class="co"># simdata is a list of three elements</span>
+<span class="kw">names</span>(simdata) 
+<span class="co">#&gt; [1] &quot;count&quot;     &quot;genesUp&quot;   &quot;genesDown&quot;</span>
+
+<span class="co"># count matrix of the cell state 2</span>
+simdata<span class="op">$</span>count[[<span class="dv">2</span>]][<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>] 
+<span class="co">#&gt;       C2_1 C2_2 C2_3</span>
+<span class="co">#&gt; gene1  132    0    0</span>
+<span class="co">#&gt; gene2    6    2    6</span>
+<span class="co">#&gt; gene3    0    0    0</span>
+
+<span class="co"># up-regulated genes from state 1 to state 2</span>
+simdata<span class="op">$</span>genesUp[[<span class="dv">2</span>]][<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>] 
+<span class="co">#&gt; [1] &quot;gene1655&quot; &quot;gene614&quot;  &quot;gene6057&quot;</span>
+
+<span class="co"># down-regulated genes from state 1 to state 2</span>
+simdata<span class="op">$</span>genesDown[[<span class="dv">2</span>]][<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>] 
+<span class="co">#&gt; [1] &quot;gene1958&quot; &quot;gene4631&quot; &quot;gene4888&quot;</span></code></pre></div>
+</div>
+<div id="design_sep" class="section level2">
+<h2><code>design_sep</code></h2>
+<p><code>design_sep</code> assists experimental design by selecting the optimal cell numbers for the two cell states in scRNA-seq, so that the subsequent DE analysis becomes most accurate based on the user-specified criterion. It assumes that cells from the two states are prepared as two separate libraries and sequenced independently. Key parameters include</p>
+<ul>
+<li><code>realcount1</code>: a real count matrix of cell state 1</li>
+<li><code>realcount2</code>: a real count matrix of cell state 2</li>
+<li><code>S1</code>: total number of RNA-seq reads for cell state 1. Default to 1e8</li>
+<li><code>S2</code>: total number of RNA-seq reads for cell state 2. Default to 1e8</li>
+<li><code>ncell</code>: a two-column matrix specifying the candidate numbers of cells</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">realcount1 =<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;astrocytes.rds&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;scDesign&quot;</span>))
+realcount2 =<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;oligodendrocytes.rds&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;scDesign&quot;</span>))
+
+<span class="co"># candidate cell numbers for experimental design</span>
+ncell =<span class="st"> </span><span class="kw">cbind</span>(<span class="dv">2</span><span class="op">^</span><span class="kw">seq</span>(<span class="dv">6</span>,<span class="dv">11</span>,<span class="dv">1</span>), <span class="dv">2</span><span class="op">^</span><span class="kw">seq</span>(<span class="dv">6</span>,<span class="dv">11</span>,<span class="dv">1</span>))
+prlist =<span class="st"> </span><span class="kw">design_sep</span>(realcount1, realcount2, <span class="dt">ncell =</span> ncell, <span class="dt">de_method =</span> <span class="st">&quot;ttest&quot;</span>, <span class="dt">ncores =</span> <span class="dv">10</span>)
+
+<span class="co"># returns a list of five elements</span>
+<span class="co"># precision, recall, TN (true negative rate),</span>
+<span class="co"># F1 (harmonic mean of precision and recall),</span>
+<span class="co"># F2 (harmonic mean of TN and recall)</span>
+<span class="kw">names</span>(prlist)
+<span class="co">#&gt; precision  recall  TN  F1  F2</span>
+prlist<span class="op">$</span>precision
+<span class="co">#&gt; p_thre 64vs64 128vs128 256vs256 512vs512 1024vs1024 2048vs2048</span>
+<span class="co">#&gt; 0.01   0.332  0.272    0.178    0.121    0.084      0.056</span>
+<span class="co">#&gt; 0.001  0.448  0.361    0.231    0.147    0.097      0.063</span>
+<span class="co">#&gt; 1e-04  0.532  0.434    0.282    0.175    0.11       0.07</span>
+<span class="co">#&gt; 1e-05  0.599  0.491    0.331    0.203    0.124      0.076</span>
+<span class="co">#&gt; 1e-06  0.649  0.534    0.375    0.231    0.138      0.083</span></code></pre></div>
+<p><code>design_sep</code> also saves the analysis results to a txt file [REF] and a set of power analysis plots [REF].</p>
+</div>
+<div id="design_joint" class="section level2">
+<h2><code>design_joint</code></h2>
+<p><code>design_joint</code> assists experimental design by selecting the optimal (total) cell number for a cell population that contains the two cell states of interest, so that the subsequent DE analysis becomes most accurate based on the user-specified criterion. It assumes that cells from the two states are prepared in the same library and sequenced together. Key parameters include</p>
+<ul>
+<li><code>realcount1</code>: a real count matrix of cell state 1</li>
+<li><code>realcount2</code>: a real count matrix of cell state 2</li>
+<li><code>S</code>: the total number of RNA-seq reads for the cell population. Default to 1e8</li>
+<li><code>ncell</code>: the (candidate) total number of cells</li>
+<li><code>prop1</code>: the proportion of state 1 cells in the cell population</li>
+<li><code>prop2</code>: the proportion of state 2 cells in the cell population</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># candidate cell numbers for experimental design</span>
+ncell =<span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span><span class="op">^</span><span class="kw">seq</span>(<span class="dv">9</span>,<span class="dv">13</span>,<span class="dv">1</span>))
+prlist =<span class="st"> </span><span class="kw">design_joint</span>(realcount1, realcount2, <span class="dt">prop1 =</span> <span class="fl">0.2</span>, <span class="dt">prop2 =</span> <span class="fl">0.15</span>,
+                      <span class="dt">ncell =</span> ncell, <span class="dt">de_method =</span> <span class="st">&quot;ttest&quot;</span>, <span class="dt">ncores =</span> <span class="dv">10</span>)
+
+<span class="co"># returns a list of five elements</span>
+<span class="kw">names</span>(prlist)
+<span class="co">#&gt; precision  recall  TN  F1  F2</span>
+prlist<span class="op">$</span>precision</code></pre></div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
