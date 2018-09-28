@@ -12,7 +12,7 @@
 
 <meta name="author" content="Wei Vivian Li" />
 
-<meta name="date" content="2018-09-01" />
+<meta name="date" content="2018-09-28" />
 
 <title>Introduction to scDesign</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Introduction to scDesign</h1>
 <h4 class="author"><em>Wei Vivian Li</em></h4>
-<h4 class="date"><em>2018-09-01</em></h4>
+<h4 class="date"><em>2018-09-28</em></h4>
 
 
 
@@ -173,7 +173,13 @@ prlist =<span class="st"> </span><span class="kw">design_joint</span>(realcount1
 <span class="co"># returns a list of five elements</span>
 <span class="kw">names</span>(prlist)
 <span class="co">#&gt; precision  recall  TN  F1  F2</span>
-prlist<span class="op">$</span>precision</code></pre></div>
+prlist<span class="op">$</span>recall
+<span class="co">#&gt;       512   1024  2048  4096  8192</span>
+<span class="co">#&gt; 0.01  0.315 0.33  0.259 0.176 0.111</span>
+<span class="co">#&gt; 0.001 0.235 0.281 0.24  0.169 0.108</span>
+<span class="co">#&gt; 1e-04 0.176 0.236 0.22  0.162 0.105</span>
+<span class="co">#&gt; 1e-05 0.133 0.198 0.2   0.155 0.102</span>
+<span class="co">#&gt; 1e-06 0.103 0.166 0.181 0.147 0.099</span></code></pre></div>
 </div>
 
 
