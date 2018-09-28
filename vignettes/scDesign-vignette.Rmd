@@ -2,7 +2,7 @@
 title: "Introduction to scDesign"
 author: "Wei Vivian Li"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: pdf_document
 #output: pdf_document
 vignette: >
   %\VignetteIndexEntry{scDesign: a statistical simulator for rational scRNA-seq experimental design}

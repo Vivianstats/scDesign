@@ -107,7 +107,7 @@ prlist$precision
 #> 1e-06  0.649  0.534    0.375    0.231    0.138      0.083
 ```
 
-`design_sep` also saves the analysis results to a txt file \[REF\] and a set of power analysis plots \[REF\].
+`design_sep` also saves the analysis results to a [txt file](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/sep-manual/design_summary.txt) and a set of power analysis [plots](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/sep-manual/design_summary.pdf).
 
 ### `design_joint`
 
@@ -131,4 +131,4 @@ prlist$recall
 #> 1e-06 0.103 0.166 0.181 0.147 0.099
 ```
 
-`design_joint` also saves the analysis results to a txt file \[REF\] and a set of power analysis plots \[REF\].
+`design_joint` also saves the analysis results to a [txt file](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/joint-manual/design_summary.txt) and a set of power analysis [plots](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/joint-manual/design_summary.pdf).
