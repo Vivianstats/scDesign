@@ -1,6 +1,6 @@
 Package: scDesign
 Title: A statistical simulator for rational scRNA-seq experimental design
-Version: 0.0.1
+Version: 1.0.0
 Date: 2018-08-30
 Author: Wei Vivian Li, Jingyi Jessica Li
 Maintainer: Wei Vivian Li <liw@ucla.edu>

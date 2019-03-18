@@ -18,13 +18,13 @@ knitr::opts_chunk$set(
 
 ## Latest News
 
-> 2018/08/15:
-
+> 2019/03/18:
+Version 1.0.0 released!
 
 ## Introduction
 
 
-Any suggestions on the package are welcome! For technical problems, please report to [Issues](https://github.com/Vivianstats/scImpute/issues). For suggestions and comments on the method, please contact Wei (<liw@ucla.edu>) or Dr. Jessica Li (<jli@stat.ucla.edu>). 
+Any suggestions on the package are welcome! For technical problems, please report to [Issues](https://github.com/Vivianstats/scDesign/issues). For suggestions and comments on the method, please contact Wei (Vivian) (<liw@ucla.edu>) or Dr. Jessica Li (<jli@stat.ucla.edu>). 
 
 ## Installation
 The package is not on CRAN yet. For installation please use the following codes in `R`
@@ -43,7 +43,7 @@ install_github("Vivianstats/scDesign")
 - `design_sep` for scRNA-seq experimental design assuming two cell states are sequenced independetly
 - `design_joint` for scRNA-seq experimental design assuming two cell states are sequenced together
 
-For detailed usage, please refer to the package [manual](https://github.com/Vivianstats/scImpute/blob/master/inst/docs/) or [vignette](https://github.com/Vivianstats/scImpute/blob/master/vignettes/scImpute-vignette.Rmd).
+For detailed usage, please refer to the package [manual](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/) or [vignette](https://github.com/Vivianstats/scDesign/blob/master/vignettes/scDesign-vignette.Rmd).
 
 
 ### `design_data`
@@ -114,7 +114,7 @@ prlist$precision
 #> 1e-05  0.599  0.491    0.331    0.203    0.124      0.076
 #> 1e-06  0.649  0.534    0.375    0.231    0.138      0.083
 ```
-`design_sep` also saves the analysis results to a txt file [REF] and a set of power analysis plots [REF].
+`design_sep` also saves the analysis results to a [txt file](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/sep-manual/design_summary.txt) and a set of power analysis [plots](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/sep-manual/design_summary.pdf).
 
 
 
@@ -139,4 +139,4 @@ prlist$recall
 #> 1e-05 0.133 0.198 0.2   0.155 0.102
 #> 1e-06 0.103 0.166 0.181 0.147 0.099
 ```
-`design_joint` also saves the analysis results to a txt file [REF] and a set of power analysis plots [REF].
+`design_joint` also saves the analysis results to a [txt file](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/joint-manual/design_summary.txt) and a set of power analysis [plots](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/joint-manual/design_summary.pdf).

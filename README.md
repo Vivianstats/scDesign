@@ -1,13 +1,13 @@
 scDesign: a statistical simulator for rational scRNA-seq experimental design
 ================
 Wei Vivian Li, Jingyi Jessica Li
-2018-09-28
+2019-03-18
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 Latest News
 -----------
 
-> 2018/08/15:
+> 2019/03/18: Version 1.0.0 released!
 
 Introduction
 ------------
