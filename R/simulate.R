@@ -23,7 +23,7 @@ estimate_pa = function(rcount, ncores = 10){
 }
 
 # single count matrix; keep real genes
-simulate_ofo = function(estpa, Js, S = NULL){
+simulate_ofo = function(estpa, Js, S = NULL, exprmean = NULL){
   ngenes = estpa$ngenes
   cell_drate = estpa$cell_drate
   maxlog = estpa$maxlog
@@ -38,7 +38,13 @@ simulate_ofo = function(estpa, Js, S = NULL){
   gene_drate = pa[,"rate"]
 
   simucount = matrix(0, ncol = Js, nrow = ngenes)
-  simu_mean = real_mean
+  if(is.null(exprmean)){
+    simu_mean = real_mean
+  }else{
+    simu_mean = exprmean[rownames(pa)]
+    simu_mean = simu_mean / median(exprmean) * median(real_mean, na.rm = T)
+  }
+
   simu_sd = real_sd
 
   ### simulate ideal counts
@@ -136,7 +142,7 @@ simulate_new_ofo = function(rcount, estpa, Js, S = NULL){
 # multiple count matrices; new de genes
 simulate_de_mfo = function(rcount, estpa, Js, ngroup = 2, S,
                            pUp = 0.05, pDown = 0.05,
-                           fU = 5, fL = 3){
+                           fU = 5, fL = 3, exprmean = NULL){
   if(ngroup < 2){stop("number of cell groups < 2!")}
   ngenes = estpa$ngenes
   cell_drate = estpa$cell_drate
@@ -152,7 +158,12 @@ simulate_de_mfo = function(rcount, estpa, Js, ngroup = 2, S,
   gene_drate = pa[,"rate"]
 
   ### cell condition 1
-  simu_mean1 = simulate_mean(real_mean)
+  if(is.null(exprmean)){
+    simu_mean1 = simulate_mean(real_mean)
+  }else{
+    simu_mean1 = exprmean[rownames(pa)]
+    simu_mean1 = simu_mean1 / median(exprmean) * median(real_mean, na.rm = T)
+  }
 
   parlist = list()
   cmean = simu_mean1

@@ -4,17 +4,28 @@
 \alias{design_data}
 \title{use scDesign to simulate scRNA-seq data}
 \usage{
-design_data(realcount, S = 1e+08, ncell, ngroup = 1, pUp = 0.05,
-  pDown = 0.05, fU = 5, fL = 1.5, ncores = 1)
+design_data(
+  realcount,
+  S = 1e+08,
+  ncell,
+  ngroup = 1,
+  pUp = 0.05,
+  pDown = 0.05,
+  fU = 5,
+  fL = 1.5,
+  ncores = 1,
+  exprmean = NULL
+)
 }
 \arguments{
-\item{realcount}{A numeric matrix with rows representing genes and columns representing cells. 
+\item{realcount}{A numeric matrix with rows representing genes and columns representing cells.
 Gene names are given as row names.}
 
-\item{S}{A number specifying the total number of RNA-seq reads. Default to 1e8.}
+\item{S}{A number specifying the total number of RNA-seq reads. Default to 1e8.
+When \code{ngroup > 1}, \code{S} should be a vector specifying the read number in each cell state.}
 
 \item{ncell}{An integer specifying the number of cells. When \code{ngroup > 1},
-\code{ncell} is the number of cells in each cell state.}
+\code{ncell} is vector specifying the number of cells in each cell state.}
 
 \item{ngroup}{An integer giving the number of cell states to simulate. Defaults to 1.}
 
@@ -32,11 +43,15 @@ Deaults to 1.5.}
 
 \item{ncores}{An integer specifying the number of cores used for parallel computation.
 Defaults to 1.}
+
+\item{exprmean}{A named vector of user-specified gene mean expression parameters.
+The names of \code{exprmean} should match the rownames of \code{realcount} in the same order.
+Supplied gene expression mean should be on the $log_10$ scale.}
 }
 \value{
 When \code{ngroup = 1}, \code{design_data} returns a simulated count matrix with
 rows representing genes and columns representing cells.
-When \code{ngroup > 1}, \code{design_data} returns a list of \code{ngroup} elements. 
+When \code{ngroup > 1}, \code{design_data} returns a list of \code{ngroup} elements.
 The g-th element corresponds to the g-th cell state, and is a list containing three elements:
 \describe{
   \item{count:}{a count matrix with rows representing genes and columns representing cells;}

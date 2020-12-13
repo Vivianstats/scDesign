@@ -1,9 +1,10 @@
 #' use scDesign to simulate scRNA-seq data
-#' @param realcount A numeric matrix with rows representing genes and columns representing cells. 
+#' @param realcount A numeric matrix with rows representing genes and columns representing cells.
 #' Gene names are given as row names.
 #' @param S A number specifying the total number of RNA-seq reads. Default to 1e8.
+#' When \code{ngroup > 1}, \code{S} should be a vector specifying the read number in each cell state.
 #' @param ncell An integer specifying the number of cells. When \code{ngroup > 1},
-#' \code{ncell} is the number of cells in each cell state.
+#' \code{ncell} is vector specifying the number of cells in each cell state.
 #' @param ngroup An integer giving the number of cell states to simulate. Defaults to 1.
 #' @param pUp A value between 0 and 1 specifying the proportion of up regulated genes
 #' between two adjacent cell states. Defaults to 0.05 and only used when \code{ngroup > 1}.
@@ -15,9 +16,12 @@
 #' Deaults to 1.5.
 #' @param ncores An integer specifying the number of cores used for parallel computation.
 #' Defaults to 1.
+#' @param exprmean A named vector of user-specified gene mean expression parameters.
+#' The names of \code{exprmean} should match the rownames of \code{realcount} in the same order.
+#' Supplied gene expression mean should be on the $log_10$ scale.
 #' @return When \code{ngroup = 1}, \code{design_data} returns a simulated count matrix with
 #' rows representing genes and columns representing cells.
-#' When \code{ngroup > 1}, \code{design_data} returns a list of \code{ngroup} elements. 
+#' When \code{ngroup > 1}, \code{design_data} returns a list of \code{ngroup} elements.
 #' The g-th element corresponds to the g-th cell state, and is a list containing three elements:
 #' \describe{
 #'   \item{count:}{a count matrix with rows representing genes and columns representing cells;}
@@ -26,19 +30,35 @@
 #' }
 #' @export
 #' @import parallel
-#' @importFrom stats complete.cases dgamma dnorm prcomp quantile rgamma rnorm sd uniroot
+#' @importFrom stats complete.cases dgamma dnorm prcomp quantile rgamma rnorm sd uniroot median pchisq
 #' @author Wei Vivian Li, \email{liw@ucla.edu}
 #' @author Jingyi Jessica Li, \email{jli@stat.ucla.edu}
-design_data = function(realcount, S = 1e8, ncell, ngroup = 1, 
-                       pUp = 0.05, pDown = 0.05, fU = 5, fL = 1.5, ncores = 1){
+design_data = function(realcount, S = 1e8, ncell, ngroup = 1,
+                       pUp = 0.05, pDown = 0.05, fU = 5, fL = 1.5, ncores = 1,
+                       exprmean = NULL){
   estpa = estimate_pa(realcount, ncores = ncores)
-  if(ngroup == 1){
-    simu_res = simulate_new_ofo(realcount, Js = ncell, estpa = estpa, S = S)
+  if(is.null(exprmean)){
+    if(ngroup == 1){
+      simu_res = simulate_new_ofo(realcount, Js = ncell, estpa = estpa, S = S)
+    }else{
+      simu_res = simulate_de_mfo(realcount, estpa, Js = ncell,
+                                 ngroup = ngroup, S = S,
+                                 pUp = pUp, pDown = pDown, fU = fU, fL = fL)
+    }
   }else{
-    simu_res = simulate_de_mfo(realcount, estpa, Js = ncell, 
-                               ngroup = ngroup, S = S,
-                               pUp = pUp, pDown = pDown, fU = fU, fL = fL)
+    flag = sum(names(exprmean) != rownames(realcount))
+    if(sum(flag) > 1)stop("Names of exprmean must match rownames of realcount!")
+    if(sum(is.na(exprmean)) > 1)stop("exprmean must not contain NA values!")
+
+    if(ngroup == 1){
+      simu_res = simulate_ofo(estpa = estpa, Js = ncell, S = S, exprmean = exprmean)
+    }else{
+      simu_res = simulate_de_mfo(realcount, estpa, Js = ncell,
+                                 ngroup = ngroup, S = S,
+                                 pUp = pUp, pDown = pDown, fU = fU, fL = fL, exprmean = exprmean)
+    }
   }
+
   return(simu_res)
 }
 
@@ -53,10 +73,10 @@ design_plot_sep = function(prlist, ncell, plot_dir, pvals){
     num = names(sort(table(nums), decreasing=TRUE)[1])
     return(num)
   })
-  measures = c("precision", "recall (TP)", "TN", 
+  measures = c("precision", "recall (TP)", "TN",
                "F1 (precision vs. recall)", "F2 (TP vs. TN)")
   numdata = data.frame(metric = measures, "cell number" = bestnum)
-  
+
   prmat = lapply(1:5, function(k){
     mat = prlist[[k]]
     data = as.data.frame(mat)
@@ -70,13 +90,13 @@ design_plot_sep = function(prlist, ncell, plot_dir, pvals){
   red = "#CC0C00"; lred = "#EEAEAA"
   blue = "#5C88DA"; lblue = "#C8D7F2"
   yellow = "#FFB200"; lyellow = "#FFE5AA"
-  
+
   ylabs = c("precision", "recall (TP)", "TN", "F1", "F2")
   plots = lapply(1:5, function(k){
     if(k %in% c(1,3)){low = lblue; high = blue}
     if(k == 2){low = lred; high = red}
     if(k %in% c(4,5)){low = lyellow; high = yellow}
-    
+
     g1 = ggplot(prmat[[k]], aes(x = ncell, y = value, group = pval, color = pval)) +
       geom_line()+ scale_color_gradient(low = low, high = high, name = "-log(p)") +
       xlab("") + ylab(ylabs[k]) +
@@ -88,7 +108,7 @@ design_plot_sep = function(prlist, ncell, plot_dir, pvals){
             axis.text.x = element_text(angle = 45, hjust = 1))
     return(g1)
   })
-  
+
   mytheme = gridExtra::ttheme_default(base_size = 20)
   gtable = tableGrob(numdata, rows = NULL, theme = mytheme)
   width = nrow(ncell) * 1.5
@@ -109,9 +129,9 @@ design_plot_sep = function(prlist, ncell, plot_dir, pvals){
 
 
 #' use scDesign to make experimental design assuming two cell states are sequenced independently
-#' @param realcount1 A numeric matrix with rows representing genes and columns representing cells (cell state 1). 
+#' @param realcount1 A numeric matrix with rows representing genes and columns representing cells (cell state 1).
 #' Gene names are given as row names.
-#' @param realcount2 A numeric matrix with rows representing genes and columns representing cells (cell state 2). 
+#' @param realcount2 A numeric matrix with rows representing genes and columns representing cells (cell state 2).
 #' Gene names are given as row names.
 #' @param S1 A number specifying the total number of RNA-seq reads for cell state 1. Default to 1e8.
 #' @param S2 A number specifying the total number of RNA-seq reads for cell state 2. Default to 1e8.
@@ -126,17 +146,17 @@ design_plot_sep = function(prlist, ncell, plot_dir, pvals){
 #' 2048 \tab 2048 \cr
 #' 4096 \tab 4096 \cr
 #' }
-#' @param B An integer giving the number of experiments to repeat in order the calculate 
+#' @param B An integer giving the number of experiments to repeat in order the calculate
 #' the average DE analysis accuracy. Defaults to 100.
 #' @param de_method A character specifying the differential expression analysis method to use.
 #' Currently supports "ttest" (default) or "mast".
-#' @param p_thre A numeric vector specifying the FDR thresholds used to identify 
+#' @param p_thre A numeric vector specifying the FDR thresholds used to identify
 #' differentially expressed genes. Defaults to \code{10^seq(-2,-6,-1)}.
 #' @param plot_dir A character giving the directory to save experimental design results
 #' Defaults to "./".
 #' @param ncores An integer specifying the number of cores used for parallel computation.
 #' Defaults to 1.
-#' @param rank An integer specifying the number of top DE genes to identify 
+#' @param rank An integer specifying the number of top DE genes to identify
 #' from scImpute's results as the standard in DE analysis. Defaults to 1000.
 #' @return A list of five elments:
 #' \describe{
@@ -146,10 +166,10 @@ design_plot_sep = function(prlist, ncell, plot_dir, pvals){
 #'   \item{F1:}{a matrix of F1 (precision vs. recall).}
 #'   \item{F2:}{a matrix of F2 (TN vs. recall).}
 #' }
-#' In all the matrices, rows correspond to different FDR thresholds and 
+#' In all the matrices, rows correspond to different FDR thresholds and
 #' columns correspond to the cell numbers  specified in \code{ncell}.
 #' \code{design_sep} also writes the list to design_summary.txt and
-#' saves it to \code{plot_dir}. 
+#' saves it to \code{plot_dir}.
 #' The corresponding plots are also saved to \code{plot_dir}.
 #' @export
 #' @import parallel
@@ -167,7 +187,7 @@ design_plot_sep = function(prlist, ncell, plot_dir, pvals){
 #' @importFrom stats coef p.adjust rbinom rmultinom runif t.test var
 #' @author Wei Vivian Li, \email{liw@ucla.edu}
 #' @author Jingyi Jessica Li, \email{jli@stat.ucla.edu}
-design_sep = function(realcount1, realcount2, 
+design_sep = function(realcount1, realcount2,
                         S1 = 1e8, S2 = 1e8, ncell = NULL, B = 100,
                         de_method = "ttest", p_thre = 10^seq(-2,-6,-1),
                         plot_dir = "./",
@@ -180,29 +200,29 @@ design_sep = function(realcount1, realcount2,
   if(ncol(ncell) != 2) stop("ncell must have two columns!")
   if(is.null(rownames(realcount1))) stop("realcount1 must have rownames!")
   if(is.null(rownames(realcount1))) stop("realcount1 must have rownames!")
-    
+
   ncell = data.frame(ncell)
   colnames(ncell) = c("n1", "n2")
   ncell = ncell[with(ncell, order(n1, n2)), , drop = FALSE]
-  
+
   estpa1 = estimate_pa(realcount1, ncores = ncores)
   estpa2 = estimate_pa(realcount2, ncores = ncores)
-  
+
   truede = de_scimpute(estpa1$pa, estpa2$pa, ncores = ncores, by = "rank", rank = rank)
-  
-  prlist = get_pr_mfdr(estpa1, estpa2, B=B, ncell=ncell, S1=S1, S2=S2, 
-                       de_method = de_method, degenes = truede, 
+
+  prlist = get_pr_mfdr(estpa1, estpa2, B=B, ncell=ncell, S1=S1, S2=S2,
+                       de_method = de_method, degenes = truede,
                        fdr_thres = p_thre, ncores = ncores)
   dir.create(plot_dir, recursive = TRUE)
   design_plot_sep(prlist, ncell, plot_dir = plot_dir, pvals = p_thre)
-  
+
   for(i in 1:5){
-    cat(names(prlist)[i], file=paste0(plot_dir,"design_summary.txt"), 
+    cat(names(prlist)[i], file=paste0(plot_dir,"design_summary.txt"),
         sep="\n", append = TRUE)
     mat = round(prlist[[i]], digits = 3)
     mat1 = data.frame(rownames(mat), mat)
     colnames(mat1) = c("p_thre", colnames(mat))
-    write.table(mat1, file=paste0(plot_dir,"design_summary.txt"), 
+    write.table(mat1, file=paste0(plot_dir,"design_summary.txt"),
                 row.names=FALSE, col.names=TRUE, append = TRUE, quote = FALSE)
     cat("\n", file=paste0(plot_dir,"design_summary.txt"), append = TRUE)
   }
@@ -220,10 +240,10 @@ design_plot_joint = function(prlist, ncell, plot_dir, pvals){
     num = names(sort(table(nums), decreasing=TRUE)[1])
     return(num)
   })
-  measures = c("precision", "recall (TP)", "TN", 
+  measures = c("precision", "recall (TP)", "TN",
                "F1 (precision vs. recall)", "F2 (TP vs. TN)")
   numdata = data.frame(metric = measures, "cell number" = bestnum)
-  
+
   prmat = lapply(1:5, function(k){
     mat = prlist[[k]]
     data = as.data.frame(mat)
@@ -237,13 +257,13 @@ design_plot_joint = function(prlist, ncell, plot_dir, pvals){
   red = "#CC0C00"; lred = "#EEAEAA"
   blue = "#5C88DA"; lblue = "#C8D7F2"
   yellow = "#FFB200"; lyellow = "#FFE5AA"
-  
+
   ylabs = c("precision", "recall (TP)", "TN", "F1", "F2")
   plots = lapply(1:5, function(k){
     if(k %in% c(1,3)){low = lblue; high = blue}
     if(k == 2){low = lred; high = red}
     if(k %in% c(4,5)){low = lyellow; high = yellow}
-    
+
     g1 = ggplot(prmat[[k]], aes(x = ncell, y = value, group = pval, color = pval)) +
       geom_line()+ scale_color_gradient(low = low, high = high, name = "-log(p)") +
       xlab("") + ylab(ylabs[k]) +
@@ -255,7 +275,7 @@ design_plot_joint = function(prlist, ncell, plot_dir, pvals){
             axis.text.x = element_text(angle = 45, hjust = 1))
     return(g1)
   })
-  
+
   mytheme = gridExtra::ttheme_default(base_size = 20)
   gtable = tableGrob(numdata, rows = NULL, theme = mytheme)
   width = length(ncell) * 1.5
@@ -277,26 +297,26 @@ design_plot_joint = function(prlist, ncell, plot_dir, pvals){
 
 
 #' use scDesign to make experimental design assuming two cell states are sequenced together
-#' @param realcount1 A numeric matrix with rows representing genes and columns representing cells (cell state 1). 
+#' @param realcount1 A numeric matrix with rows representing genes and columns representing cells (cell state 1).
 #' Gene names are given as row names.
-#' @param realcount2 A numeric matrix with rows representing genes and columns representing cells (cell state 2). 
+#' @param realcount2 A numeric matrix with rows representing genes and columns representing cells (cell state 2).
 #' Gene names are given as row names.
 #' @param prop1 A number giving the proportion of state 1 cells in the cell population.
 #' @param prop2 A number giving the proportion of state 2 cells in the cell population.
 #' @param S A number specifying the total number of RNA-seq reads for the cell population. Default to 1e8.
-#' @param ncell An integer vector specifying the total number of cells to sequence. 
+#' @param ncell An integer vector specifying the total number of cells to sequence.
 #' Defaults to \code{2^seq(6,13,1)}.
-#' @param B An integer giving the number of experiments to repeat in order the calculate 
+#' @param B An integer giving the number of experiments to repeat in order the calculate
 #' the average DE analysis accuracy. Defaults to 100.
 #' @param de_method A character specifying the differential expression analysis method to use.
 #' Currently supports "ttest" (default) or "mast".
-#' @param p_thre A numeric vector specifying the FDR thresholds used to identify 
+#' @param p_thre A numeric vector specifying the FDR thresholds used to identify
 #' differentially expressed genes. Defaults to \code{10^seq(-2,-6,-1)}.
 #' @param plot_dir A character giving the directory to save experimental design results
 #' Defaults to "./".
 #' @param ncores An integer specifying the number of cores used for parallel computation.
 #' Defaults to 1.
-#' @param rank An integer specifying the number of top DE genes to identify 
+#' @param rank An integer specifying the number of top DE genes to identify
 #' from scImpute's results as the standard in DE analysis. Defaults to 1000.
 #' @return A list of five elments:
 #' \describe{
@@ -306,10 +326,10 @@ design_plot_joint = function(prlist, ncell, plot_dir, pvals){
 #'   \item{F1:}{a matrix of F1 (precision vs. recall).}
 #'   \item{F2:}{a matrix of F2 (TN vs. recall).}
 #' }
-#' In all the matrices, rows correspond to different FDR thresholds and 
+#' In all the matrices, rows correspond to different FDR thresholds and
 #' columns correspond to the cell numbers  specified in \code{ncell}.
 #' \code{design_joint} also writes the list to design_summary.txt and
-#' saves it to \code{plot_dir}. 
+#' saves it to \code{plot_dir}.
 #' The corresponding plots are also saved to \code{plot_dir}.
 #' @export
 #' @import parallel
@@ -340,29 +360,29 @@ design_joint = function(realcount1, realcount2, prop1, prop2,
   if(length(genes_int) < 1000) stop("two real datasets have less than 1000 common genes!")
   realcount1 = realcount1[genes_int, ]
   realcount2 = realcount2[genes_int, ]
-  
+
   estpa1 = estimate_pa(realcount1, ncores = ncores)
   estpa2 = estimate_pa(realcount2, ncores = ncores)
-  
+
   truede = de_scimpute(estpa1$pa, estpa2$pa, ncores = ncores, by = "rank", rank = rank)
-  
-  prlist = get_pr_mfdr_joint(estpa1, estpa2, B=B, Js_vec = ncell, 
-                             prop1 = prop1, prop2 = prop2, S=S, 
-                             de_method = de_method, degenes = truede, by = "fdr", 
+
+  prlist = get_pr_mfdr_joint(estpa1, estpa2, B=B, Js_vec = ncell,
+                             prop1 = prop1, prop2 = prop2, S=S,
+                             de_method = de_method, degenes = truede, by = "fdr",
                              fdr_thres = p_thre, ncores = ncores)
   dir.create(plot_dir, recursive = TRUE)
   design_plot_joint(prlist, ncell, plot_dir = plot_dir, pvals = p_thre)
-  
+
   for(i in 1:5){
-    cat(names(prlist)[i], file=paste0(plot_dir,"design_summary.txt"), 
+    cat(names(prlist)[i], file=paste0(plot_dir,"design_summary.txt"),
         sep="\n", append = TRUE)
     mat = round(prlist[[i]], digits = 3)
     mat1 = data.frame(rownames(mat), mat)
     colnames(mat1) = c("p_thre", colnames(mat))
-    write.table(mat1, file=paste0(plot_dir,"design_summary.txt"), 
+    write.table(mat1, file=paste0(plot_dir,"design_summary.txt"),
                 row.names=FALSE, col.names=TRUE, append = TRUE, quote = FALSE)
     cat("\n", file=paste0(plot_dir,"design_summary.txt"), append = TRUE)
   }
-  
+
   return(prlist)
 }

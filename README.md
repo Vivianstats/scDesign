@@ -1,21 +1,20 @@
 scDesign: a statistical simulator for rational scRNA-seq experimental design
 ================
-Wei Vivian Li, Jingyi Jessica Li
-2019-03-18
+Wei Vivian Li
+2020-12-13
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-Latest News
------------
+## Latest News
+
+> 2020/12/13: Version 1.1.0 released!
 
 > 2019/03/18: Version 1.0.0 released!
 
-Introduction
-------------
+## Introduction
 
-Any suggestions on the package are welcome! For technical problems, please report to [Issues](https://github.com/Vivianstats/scDesign/issues). For suggestions and comments on the method, please contact Wei (Vivian) (<liw@ucla.edu>) or Dr. Jessica Li (<jli@stat.ucla.edu>).
+Any suggestions on the package are welcome! For technical problems, please report to [Issues](https://github.com/Vivianstats/scDesign/issues). For suggestions and comments on the method, please contact Dr. Vivian Li (<vivian.li@rutgers.edu>) or Dr. Jessica Li (<jli@stat.ucla.edu>).
 
-Installation
-------------
+## Installation
 
 The package is not on CRAN yet. For installation please use the following codes in `R`
 
@@ -26,8 +25,7 @@ library(devtools)
 install_github("Vivianstats/scDesign")
 ```
 
-Quick start
------------
+## Quick start
 
 `scDesign` has three main functions:
 
@@ -60,7 +58,7 @@ simcount1[1:3, 1:3]
 When `ngroup > 1`, it simulates `ngroup` datasets following a specified differentiation path.
 
 ``` r
-simdata = design_data(realcount = realcount1, S = 1e7, ncell = 100, ngroup = 3, 
+simdata = design_data(realcount = realcount1, S = rep(1e7,3), ncell = rep(100,3), ngroup = 3, 
                       pUp = 0.03, pDown = 0.03, fU = 3, fL = 1.5, ncores = 1)
 
 # simdata is a list of three elements
@@ -132,3 +130,7 @@ prlist$recall
 ```
 
 `design_joint` also saves the analysis results to a [txt file](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/joint-manual/design_summary.txt) and a set of power analysis [plots](https://github.com/Vivianstats/scDesign/blob/master/inst/docs/joint-manual/design_summary.pdf).
+
+## Citation
+
+Li, Wei Vivian, and Jingyi Jessica Li. "A statistical simulator scDesign for rational scRNA-seq experimental design." Bioinformatics 35, no. 14 (2019): i41-i50. [Link](https://doi.org/10.1093/bioinformatics/btz321)

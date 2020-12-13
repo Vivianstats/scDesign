@@ -1,7 +1,7 @@
 Package: scDesign
 Title: A statistical simulator for rational scRNA-seq experimental design
-Version: 1.0.0
-Date: 2018-08-30
+Version: 1.1.0
+Date: 2020-12-13
 Author: Wei Vivian Li, Jingyi Jessica Li
 Maintainer: Wei Vivian Li <liw@ucla.edu>
 Description: A flexible and robust simulator for researchers to quantitatively assess practical scRNA-seq experimental design in the context of differential gene expression analysis. In addition to experimental design, scDesign also assists computational method development by generating high-quality synthetic scRNA-seq datasets under customized experimental settings.
@@ -10,7 +10,7 @@ Imports: MAST, tidyr, dplyr, gridExtra, data.table, stats, GenomicRanges, Summar
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

@@ -4,15 +4,25 @@
 \alias{design_sep}
 \title{use scDesign to make experimental design assuming two cell states are sequenced independently}
 \usage{
-design_sep(realcount1, realcount2, S1 = 1e+08, S2 = 1e+08, ncell = NULL,
-  B = 100, de_method = "ttest", p_thre = 10^seq(-2, -6, -1),
-  plot_dir = "./", ncores = 1, rank = 1000)
+design_sep(
+  realcount1,
+  realcount2,
+  S1 = 1e+08,
+  S2 = 1e+08,
+  ncell = NULL,
+  B = 100,
+  de_method = "ttest",
+  p_thre = 10^seq(-2, -6, -1),
+  plot_dir = "./",
+  ncores = 1,
+  rank = 1000
+)
 }
 \arguments{
-\item{realcount1}{A numeric matrix with rows representing genes and columns representing cells (cell state 1). 
+\item{realcount1}{A numeric matrix with rows representing genes and columns representing cells (cell state 1).
 Gene names are given as row names.}
 
-\item{realcount2}{A numeric matrix with rows representing genes and columns representing cells (cell state 2). 
+\item{realcount2}{A numeric matrix with rows representing genes and columns representing cells (cell state 2).
 Gene names are given as row names.}
 
 \item{S1}{A number specifying the total number of RNA-seq reads for cell state 1. Default to 1e8.}
@@ -31,13 +41,13 @@ column 2 is for cell state 2. By default, the following cell number matrix is us
 4096 \tab 4096 \cr
 }}
 
-\item{B}{An integer giving the number of experiments to repeat in order the calculate 
+\item{B}{An integer giving the number of experiments to repeat in order the calculate
 the average DE analysis accuracy. Defaults to 100.}
 
 \item{de_method}{A character specifying the differential expression analysis method to use.
 Currently supports "ttest" (default) or "mast".}
 
-\item{p_thre}{A numeric vector specifying the FDR thresholds used to identify 
+\item{p_thre}{A numeric vector specifying the FDR thresholds used to identify
 differentially expressed genes. Defaults to \code{10^seq(-2,-6,-1)}.}
 
 \item{plot_dir}{A character giving the directory to save experimental design results
@@ -46,7 +56,7 @@ Defaults to "./".}
 \item{ncores}{An integer specifying the number of cores used for parallel computation.
 Defaults to 1.}
 
-\item{rank}{An integer specifying the number of top DE genes to identify 
+\item{rank}{An integer specifying the number of top DE genes to identify
 from scImpute's results as the standard in DE analysis. Defaults to 1000.}
 }
 \value{
@@ -58,10 +68,10 @@ A list of five elments:
   \item{F1:}{a matrix of F1 (precision vs. recall).}
   \item{F2:}{a matrix of F2 (TN vs. recall).}
 }
-In all the matrices, rows correspond to different FDR thresholds and 
+In all the matrices, rows correspond to different FDR thresholds and
 columns correspond to the cell numbers  specified in \code{ncell}.
 \code{design_sep} also writes the list to design_summary.txt and
-saves it to \code{plot_dir}. 
+saves it to \code{plot_dir}.
 The corresponding plots are also saved to \code{plot_dir}.
 }
 \description{

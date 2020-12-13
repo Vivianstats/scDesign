@@ -7,6 +7,7 @@
 
 # install_github("Vivianstats/scDesign")
 library(scDesign)
+library(ggplot2)
 
 
 set.seed(2020)
